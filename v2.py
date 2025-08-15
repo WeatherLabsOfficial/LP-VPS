@@ -20,7 +20,7 @@ TOKEN = ''
 RAM_LIMIT = '64g'
 SERVER_LIMIT = 1000
 database_file = 'database.txt'
-PUBLIC_IP = '138.68.79.95'
+PUBLIC_IP = '100.64.193.64'
 
 # Admin user IDs - add your admin user IDs here
 ADMIN_IDS = [1384852296881537064]  # Replace with actual admin IDs
