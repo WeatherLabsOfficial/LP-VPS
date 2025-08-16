@@ -1414,4 +1414,4 @@ async def help_command(interaction: discord.Interaction):
     
     await interaction.response.send_message(embed=embed)
 
-bot.run(MTM5NzgyOTk1NTk1MzQ5NjEwNA.GtqEJF._ubTBv6ZvjxGgOCXwW5CPgKH2OaDCaDD9dPVMM)
+bot.run('MTM5NzgyOTk1NTk1MzQ5NjEwNA.G8G4bt.mggLqHLjV0WlhbtQXNg9tCNabbo83XY_JGQGeU')
