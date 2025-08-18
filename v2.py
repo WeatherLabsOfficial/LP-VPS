@@ -20,7 +20,7 @@ TOKEN = ''
 RAM_LIMIT = '64g'
 SERVER_LIMIT = 1000
 database_file = 'database.txt'
-PUBLIC_IP = '100.64.193.64'
+PUBLIC_IP = '138.68.79.95'
 
 # Admin user IDs - add your admin user IDs here
 ADMIN_IDS = [1384852296881537064]  # Replace with actual admin IDs
@@ -250,7 +250,7 @@ class ConfirmView(View):
                     f.write('')
                     
                 embed = discord.Embed(
-                    title=" All VPS Instances Deleted",
+                    title="SG Nodes All VPS Instances Deleted",
                     description=f"Successfully deleted {deleted_count} VPS instances.",
                     color=0x2400ff
                 )
@@ -327,7 +327,7 @@ async def change_status():
         else:
             instance_count = 0
 
-        status = f"🔮 Watching  Over {instance_count} VM's"
+        status = f"🔮 Watching  Over {instance_count} VPS's"
         await bot.change_presence(activity=discord.Game(name=status))
     except Exception as e:
         print(f"Failed to update status: {e}")
@@ -448,7 +448,7 @@ async def node_stats(interaction: discord.Interaction):
     
     embed.add_field(
         name=f"🧊 VPS Instances ({len(containers)})",
-        value="List of all VPS instances and their status:",
+        value="List of all SG Nodes VPS instances and their status:",
         inline=False
     )
     
@@ -713,7 +713,7 @@ async def restart_server(interaction: discord.Interaction, container_name: str):
                 # If DMs are closed
                 warning_embed = discord.Embed(
                     title="⚠️ Cannot Send DM",
-                    description="Your VPS has been restarted, but I couldn't send you a DM with the connection details. Please enable DMs from server members.",
+                    description="Your VPS has been restarted, but SG Nodes couldn't send you a DM with the connection details. Please enable DMs from server members.",
                     color=0x2400ff
                 )
                 warning_embed.add_field(
@@ -835,9 +835,9 @@ async def port_forward_website(interaction: discord.Interaction, container_name:
         )
         await interaction.followup.send(embed=error_embed)
 
-@bot.tree.command(name="deploy", description="🚀 Admin: Deploy a new VPS instance")
+@bot.tree.command(name="deploy", description="🚀 Deploy a new VPS")
 @app_commands.describe(
-    ram="RAM allocation in GB (max 100gb)",
+    ram="RAM allocation in GB (max 128gb)",
     cpu="CPU cores (max 24)",
     target_user="Discord user ID to assign the VPS to",
     container_name="Custom container name (default: auto-generated)",
@@ -845,8 +845,8 @@ async def port_forward_website(interaction: discord.Interaction, container_name:
 )
 async def deploy(
     interaction: discord.Interaction, 
-    ram: int = 16073727272727272827200, 
-    cpu: int = 40, 
+    ram: int = {ram}, 
+    cpu: int = {cpu}, 
     target_user: str = None,
     container_name: str = None,
     expiry: str = None
@@ -883,7 +883,7 @@ async def deploy(
     
     # Show OS selection dropdown
     embed = discord.Embed(
-        title="**🖥️ Select Operating System**",
+        title="**🖥️ Select The OS**",
         description="** 🔍 Please select the operating system for your VPS instance **",
         color=0x2400ff
     )
@@ -972,7 +972,7 @@ async def deploy_with_os(interaction, os_type, ram, cpu, user_id, user, containe
         dm_embed.add_field(name="🔥 CPU Cores", value=f"{cpu} cores", inline=True)
         dm_embed.add_field(name="🧊 Container Name", value=container_name, inline=False)
         dm_embed.add_field(name="💾 Storage", value=f"10000 GB (Shared storage)", inline=True)
-        dm_embed.add_field(name="🔒 Password", value="lpnodes", inline=False)
+        dm_embed.add_field(name="🔒 Password", value="sgnodes", inline=False)
         
         dm_embed.set_footer(text="Keep this information safe and private!")
         
@@ -994,7 +994,7 @@ async def deploy_with_os(interaction, os_type, ram, cpu, user_id, user, containe
             # If DMs are closed
             warning_embed = discord.Embed(
                 title="**🔍 Cannot Send DM**",
-                description=f"**VPS has been created, but I couldn't send a DM with the connection details to <@{user_id}>. Please enable DMs from server members.**",
+                description=f"**VPS has been created, but SG Nodes couldn't send a DM with the connection details to <@{user_id}>. Please enable DMs from server members.**",
                 color=0x2400ff
             )
             warning_embed.add_field(name="🔑 SSH Connection Command", value=f"```{ssh_session_line}```", inline=False)
@@ -1125,7 +1125,7 @@ async def delete_server(interaction: discord.Interaction, container_name: str):
     view = ConfirmView(container_id, container_name)
     await interaction.response.send_message(embed=confirm_embed, view=view)
 
-@bot.tree.command(name="delete-all", description="🗑️ Admin: Delete all VPS instances")
+@bot.tree.command(name="delete-all", description="🗑️ Delete all VPS instances")
 async def delete_all_servers(interaction: discord.Interaction):
     # Check if user is admin
     if interaction.user.id not in ADMIN_IDS:
@@ -1150,7 +1150,7 @@ async def delete_all_servers(interaction: discord.Interaction):
     view = ConfirmView(None, None, is_delete_all=True)
     await interaction.response.send_message(embed=confirm_embed, view=view)
 
-@bot.tree.command(name="list", description="📋 List all your VPS instances")
+@bot.tree.command(name="list", description="📋 List your all SG Nodes VPS instances")
 async def list_servers(interaction: discord.Interaction):
     user = str(interaction.user)
     servers = get_user_servers(user)
@@ -1209,7 +1209,7 @@ async def list_servers(interaction: discord.Interaction):
 
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="sendvps", description="👑 Admin: Send VPS details to a user via DM")
+@bot.tree.command(name="sendvps", description="👑 Send VPS details to a user via DM")
 @app_commands.describe(
     ram="RAM in GB",
     cpu="CPU cores",
@@ -1360,7 +1360,7 @@ async def create(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 async def send_vps_request(interaction, user, method, reward, count):
-    channel = bot.get_channel(1390545538239299608)
+    channel = bot.get_channel(1384852296881537064)
     if not channel:
         await interaction.response.send_message("❌ VPS channel not found.", ephemeral=True)
         return
@@ -1414,4 +1414,4 @@ async def help_command(interaction: discord.Interaction):
     
     await interaction.response.send_message(embed=embed)
 
-bot.run('MTM5NzgyOTk1NTk1MzQ5NjEwNA.G8G4bt.mggLqHLjV0WlhbtQXNg9tCNabbo83XY_JGQGeU')
+bot.run('MTM5NzgyOTk1NTk1MzQ5NjEwNA.GtqEJF._ubTBv6ZvjxGgOCXwW5CPgKH2OaDCaDD9dPVMM')
