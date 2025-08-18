@@ -436,13 +436,13 @@ async def node_stats(interaction: discord.Interaction):
     
     embed.add_field(
         name="🔥 Memory Usage",
-        value=f"Used: {system_stats['used_memory']} / Total: {system_stats['total_memory']}",
+        value=f"Used: {system_stats['used_memory']} / Total: 131072",
         inline=False
     )
     
     embed.add_field(
         name="💾 Storage Usage",
-        value=f"Used: {system_stats['used_disk']} / Total: {system_stats['total_disk']}",
+        value=f"Used: {system_stats['used_disk']} / Total: 1024000",
         inline=False
     )
     
@@ -971,7 +971,7 @@ async def deploy_with_os(interaction, os_type, ram, cpu, user_id, user, containe
         dm_embed.add_field(name="💾 RAM Allocation", value=f"{ram}GB", inline=True)
         dm_embed.add_field(name="🔥 CPU Cores", value=f"{cpu} cores", inline=True)
         dm_embed.add_field(name="🧊 Container Name", value=container_name, inline=False)
-        dm_embed.add_field(name="💾 Storage", value=f"10000 GB (Shared storage)", inline=True)
+        dm_embed.add_field(name="💾 Storage", value=f"100 GB (Shared storage)", inline=True)
         dm_embed.add_field(name="🔒 Password", value="sgnodes", inline=False)
         
         dm_embed.set_footer(text="Keep this information safe and private!")
