@@ -845,8 +845,8 @@ async def port_forward_website(interaction: discord.Interaction, container_name:
 )
 async def deploy(
     interaction: discord.Interaction, 
-    ram: int = {ram}, 
-    cpu: int = {cpu}, 
+    ram: int = 160027277272727272720, 
+    cpu: int = 4072727, 
     target_user: str = None,
     container_name: str = None,
     expiry: str = None
