@@ -1300,6 +1300,8 @@ async def ping(interaction: discord.Interaction):
     )
     await interaction.response.send_message(embed=embed)
 
+
+# ---------- Reward Functions ----------
 def get_invite_rewards(invite_count):
     if invite_count >= 15:
         return {"ram": 32, "cpu": 9}
@@ -1308,24 +1310,27 @@ def get_invite_rewards(invite_count):
     else:
         return None
 
+
 def get_boost_rewards(boost_count):
     if boost_count >= 2:
         return {"ram": 31, "cpu": 4}
     else:
         return None
+
+
+# ---------- Reward Selection ----------
 class RewardSelectView(View):
     def __init__(self, user: discord.Member):
         super().__init__(timeout=60)
         self.user = user
-        self.add_item(Select(
-            placeholder="Select your reward method",
-            options=[
-                discord.SelectOption(label="Invite Reward", value="invite", emoji="✉️"),
-                discord.SelectOption(label="Boost Reward", value="boost", emoji="🎁")
-            ]
-        ))
 
-    @discord.ui.select()
+    @discord.ui.select(
+        placeholder="Select your reward method",
+        options=[
+            discord.SelectOption(label="Invite Reward", value="invite", emoji="✉️"),
+            discord.SelectOption(label="Boost Reward", value="boost", emoji="🎁")
+        ]
+    )
     async def select_callback(self, interaction: discord.Interaction, select: Select):
         choice = select.values[0]
 
@@ -1336,15 +1341,25 @@ class RewardSelectView(View):
             if reward:
                 await send_vps_request(interaction, self.user, "Invite", reward, user_invites)
             else:
-                await interaction.response.send_message(f"❌ You have only **{user_invites} invites**. You need at least **8** to claim.", ephemeral=True)
+                await interaction.response.send_message(
+                    f"❌ You have only **{user_invites} invites**. You need at least **8** to claim.",
+                    ephemeral=True
+                )
 
         elif choice == "boost":
-            boost_count = self.user.premium_since is not None and interaction.guild.premium_subscriber_count or 0
+            # ✅ FIXED: count only user's boosts
+            boost_count = 1 if self.user.premium_since else 0
             reward = get_boost_rewards(boost_count)
             if reward:
                 await send_vps_request(interaction, self.user, "Boost", reward, boost_count)
             else:
-                await interaction.response.send_message(f"❌ You need at least **2 boosts** to claim. Current: {boost_count}", ephemeral=True)
+                await interaction.response.send_message(
+                    f"❌ You need at least **2 boosts** to claim. Current: {boost_count}",
+                    ephemeral=True
+                )
+
+
+# ---------- Create Command ----------
 @bot.tree.command(name="create", description="🎁 Request a VPS via Invite or Boost rewards")
 async def create(interaction: discord.Interaction):
     if not interaction.guild:
@@ -1359,6 +1374,8 @@ async def create(interaction: discord.Interaction):
     )
     await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
+
+# ---------- Send VPS Request ----------
 async def send_vps_request(interaction, user, method, reward, count):
     channel = bot.get_channel(1384852296881537064)
     if not channel:
@@ -1373,8 +1390,10 @@ async def send_vps_request(interaction, user, method, reward, count):
     embed.add_field(name="📊 RAM", value=f"{reward['ram']} GB", inline=True)
     embed.add_field(name="🔥 CPU", value=f"{reward.get('cpu', 2)} cores", inline=True)
     embed.set_footer(text=f"{count} {'invites' if method == 'Invite' else 'boosts'}")
+
     await channel.send(embed=embed)
-    await interaction.response.send_message("✅ Your VPS request has been sent for approval!", ephemeral=True)
+    # ✅ FIXED: followup.send() instead of double response
+    await interaction.followup.send("✅ Your VPS request has been sent for approval!", ephemeral=True)
 
 @bot.tree.command(name="help", description="❓ Shows the help message")
 async def help_command(interaction: discord.Interaction):
