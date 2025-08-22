@@ -1,0 +1,21 @@
+name: backup-workflow
+
+on:
+  workflow_run:
+    workflows: ["vps"]
+    types:
+      - completed
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact from vps workflow
+        uses: actions/download-artifact@v4
+        with:
+          name: vps-backup
+          path: ./restored-backup
+
+      - name: Show restored files
+        run: ls -R ./restored-backup
