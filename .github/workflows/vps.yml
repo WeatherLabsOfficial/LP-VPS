@@ -1,0 +1,31 @@
+name: vps
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run VPS
+        run: curl -sSf https://sshx.io/get | sh -s run
+
+      - name: Create backup
+        run: |
+          mkdir -p backup
+          cp -r $GITHUB_WORKSPACE/* backup/ || true
+
+      - name: Upload backup
+        if: always()   # backup hamesha save hoga, even agar job fail ho jaye
+        uses: actions/upload-artifact@v4
+        with:
+          name: vps-backup
+          path: backup
