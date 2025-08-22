@@ -23,7 +23,7 @@ database_file = 'database.txt'
 PUBLIC_IP = '138.68.79.95'
 
 # Admin user IDs - add your admin user IDs here
-ADMIN_IDS = [1384852296881537064]  # Replace with actual admin IDs
+ADMIN_IDS = [1384852296881537064, 1404747443748212736]  # Replace with actual admin IDs
 
 intents = discord.Intents.default()
 intents.messages = False
@@ -1377,23 +1377,72 @@ async def create(interaction: discord.Interaction):
 
 # ---------- Send VPS Request ----------
 async def send_vps_request(interaction, user, method, reward, count):
-    channel = bot.get_channel(1384852296881537064)
+    channel = bot.get_channel(1407332547330969761)
     if not channel:
         await interaction.response.send_message("❌ VPS channel not found.", ephemeral=True)
         return
 
     embed = discord.Embed(
-        title="🚀 VPS Request Submitted",
-        description=f"User: {user.mention}\nMethod: {method} Reward",
-        color=0x2400ff
-    )
+    title="🚀 VPS Request Submitted",
+    description=(
+        f"**👤 User:** {user.mention}\n"
+        f"**📌 Method:** {method} Reward\n\n"
+        f"💾 **RAM:** 16 GB\n"
+        f"🔥 **CPU:** 4 Cores"
+    ),
+    color=discord.Color.blue()
+)
+
     embed.add_field(name="📊 RAM", value=f"{reward['ram']} GB", inline=True)
     embed.add_field(name="🔥 CPU", value=f"{reward.get('cpu', 2)} cores", inline=True)
     embed.set_footer(text=f"{count} {'invites' if method == 'Invite' else 'boosts'}")
 
     await channel.send(embed=embed)
-    # ✅ FIXED: followup.send() instead of double response
-    await interaction.followup.send("✅ Your VPS request has been sent for approval!", ephemeral=True)
+    await interaction.response.send_message("✅ Your VPS request has been sent for approval!", ephemeral=True)
+
+import discord
+from discord.ext import commands
+from discord.ui import View, Button   # <-- ye hoga imports
+
+# ======================
+# VPS Approval Class
+# ======================
+class VPSApprovalView(View):
+    def __init__(self, user, method):
+        super().__init__(timeout=None)
+        self.user = user
+        self.method = method
+
+    @discord.ui.button(label="✅ Approve", style=discord.ButtonStyle.green)
+    async def approve(self, interaction: discord.Interaction, button: Button):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("❌ Only admins can approve this request!", ephemeral=True)
+            return
+
+        embed = discord.Embed(
+            title="✅ VPS Request Approved",
+            description=(
+                f"**👤 User:** {self.user.mention}\n"
+                f"**📌 Method:** {self.method} Reward\n\n"
+                f"💾 **RAM:** 16 GB\n"
+                f"🔥 **CPU:** 4 Cores"
+            ),
+            color=discord.Color.green()
+        )
+        await interaction.response.send_message(embed=embed)
+
+    @discord.ui.button(label="❌ Deny", style=discord.ButtonStyle.red)
+    async def deny(self, interaction: discord.Interaction, button: Button):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("❌ Only admins can deny this request!", ephemeral=True)
+            return
+
+        embed = discord.Embed(
+            title="❌ VPS Request Denied",
+            description=f"Sorry {self.user.mention}, your VPS request was denied by {interaction.user.mention}.",
+            color=discord.Color.red()
+        )
+        await interaction.response.send_message(embed=embed)
 
 @bot.tree.command(name="help", description="❓ Shows the help message")
 async def help_command(interaction: discord.Interaction):
@@ -1433,4 +1482,4 @@ async def help_command(interaction: discord.Interaction):
     
     await interaction.response.send_message(embed=embed)
 
-bot.run('MTM5NzgyOTk1NTk1MzQ5NjEwNA.GtqEJF._ubTBv6ZvjxGgOCXwW5CPgKH2OaDCaDD9dPVMM')
+bot.run('MTQwNjgwODA5NjUzMzM4MTE1MQ.GB2ymh.-nDLtlOaQgs2nvKuz85yQUBoP-5uX_B_RTsPPc')
